@@ -73,16 +73,20 @@ export default {
         // body参数 放在axios的data中
         // get参数放在axios的params中
           this.$axios({
-            url: 'authorizations', // 请求地址,axios若没有指定类型，默认是get类型
+            url: '/authorizations', // 请求地址,axios若没有指定类型，默认是get类型
             method: 'post', // 类型
             data: this.loginForm
           }).then(result => {
             //   只接受正确结果
             // 前端缓存 登录成功返回给我们的令牌
-            window.localStorage.setItem('user-token', result.data.tata.token)
-            console.log(result.data.tata.token)
+            window.localStorage.setItem('user-token', result.data.data.token)
+            // console.log(result.data.tata.token)
+            this.$router.push('/home')// 跳转到home
           }).catch(() => {
-
+            this.$message({
+              type: 'warning',
+              message: '手机号或者验证码错误'
+            })
           })
         }
       })
