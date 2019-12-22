@@ -8,7 +8,10 @@
       <!-- 右侧容器 -->
       <el-container>
           <!-- 上下布局 -->
-          <el-header>头部</el-header>
+          <el-header>
+            <!-- 头部组件 -->
+            <layout-header></layout-header>
+          </el-header>
           <el-main>
               主要区域
           </el-main>
@@ -17,10 +20,12 @@
 </template>
 
 <script>
-import layoutAside from '../../components/components/home/home/layout-aside'
+import layoutAside from '../../components/home/layout-aside'
+import layoutHeader from '../../components/home/layout-header'
 export default {
   components: {
-    'layout-aside': layoutAside
+    'layout-aside': layoutAside,
+    'layout-header': layoutHeader
   }
 }
 </script>
