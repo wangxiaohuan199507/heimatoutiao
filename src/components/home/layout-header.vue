@@ -37,13 +37,13 @@ export default {
   },
   // 生命周期的钩子函数
   created () {
-    let token = localStorage.getItem('user-token')// 获取用户命令牌
+    // let token = localStorage.getItem('user-token')// 获取用户命令牌
     this.$axios({
-      url: '/user/profile',
-      headers: {
-        // header参数
-        Authorization: `Bearer ${token}`
-      }
+      url: '/user/profile'
+      // headers: {
+      //   // header参数
+      //   Authorization: `Bearer ${token}`
+      // }
     }).then(result => {
       this.userInfo = result.data.data
     })
