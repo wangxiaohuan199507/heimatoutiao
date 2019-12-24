@@ -1,6 +1,6 @@
 <template>
   <!-- 卡片组件 -->
-  <el-card>
+  <el-card v-loading="loading" >
       <bread-crumb slot="header">
       <!-- 插槽内容 -->
       <template slot="title">
@@ -39,6 +39,7 @@ export default {
   data () {
     return {
       list: [], // 定义一个数据接收返回结果
+      loading: false, // 默认不打开进度条
       page: {
         //   专门存放分页信息数据
         total: 0,
@@ -54,12 +55,17 @@ export default {
       this.getComment()
     },
     getComment () {
+      this.loading = true// 打开进度条
       this.$axios({
         url: '/articles',
         params: { response_type: 'comment', page: this.page.currentPage, per_page: this.page.pageSize }
       }).then(result => {
         this.list = result.data.results
         this.page.total = result.data.total_count// 总条数
+        setTimeout(() => {
+          this.loading = false
+        }, 300)
+        // 关闭
       })
     },
     // 定义一个格式化的函数
