@@ -3,6 +3,7 @@
 import axios from 'axios'
 import router from '../router'
 import { Message } from 'element-ui'
+import JSONBig from 'json-bigint' // 引用第三方包
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0' // 设置一个常态值
 // 请求拦截
 axios.interceptors.request.use(function (config) {
@@ -15,6 +16,10 @@ axios.interceptors.request.use(function (config) {
   // 执行请求错误
 
 })
+
+axios.defaults.transformResponse = [function (data) {
+  return JSONBig.parse(data) // 解决js 处理大数字的失真问题
+}]
 
 // 响应拦截器
 axios.interceptors.response.use(function (response) {
@@ -41,5 +46,7 @@ axios.interceptors.response.use(function (response) {
       message = '没有设置这条评论的权限'
   }
   Message({ type: 'warning', message }) // 提示信息
+  //   这里要注意 错误执行函数如果不做任何操作，还会进入到promise then中
+  return Promise.reject(error) // 只要rejrct进入catch
 })
 export default axios
