@@ -26,6 +26,11 @@
 
           </el-table-column>
       </el-table>
+      <el-row type="flex" justify="center" align="middle" style="height:80px">
+          <!-- 分页组件 total 总页码 每页多少条-->
+          <el-pagination background layout="prev,pager,next" :current-page="page.currentPage" :page-size="page.pageSize" :total="page.total" @current-change="changePage"></el-pagination>
+      </el-row>
+
   </el-card>
 </template>
 
@@ -33,16 +38,28 @@
 export default {
   data () {
     return {
-      list: []// 定义一个数据接收返回结果
+      list: [], // 定义一个数据接收返回结果
+      page: {
+        //   专门存放分页信息数据
+        total: 0,
+        pageSize: 10, // 默认每页条数是10
+        currentPage: 1// 默认页码为1
+      }
     }
   },
   methods: {
+    changePage (newPage) {
+      //   页码改变事件
+      this.page.currentPage = newPage// 最新页码
+      this.getComment()
+    },
     getComment () {
       this.$axios({
         url: '/articles',
-        params: { response_type: 'comment' }
+        params: { response_type: 'comment', page: this.page.currentPage, per_page: this.page.pageSize }
       }).then(result => {
         this.list = result.data.results
+        this.page.total = result.data.total_count// 总条数
       })
     },
     // 定义一个格式化的函数
