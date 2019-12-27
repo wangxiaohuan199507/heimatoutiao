@@ -1,11 +1,17 @@
 <template>
-  <el-card>
+  <el-card v-loading="loading">
       <!-- 头部内容 -->
       <bread-crumb slot="header">
         <template slot="title">
             素材管理
         </template>
       </bread-crumb>
+      <!-- 上传图片 -->
+      <el-row type="flex" justify="end">
+          <el-upload action="" :http-request="uploadImg" :show-file-list="false">
+          <el-button size="small" type="primary">上传图片</el-button>
+      </el-upload>
+      </el-row>
       <!-- 标签页 -->
       <el-tabs v-model="activeName" @tab-click="changeTab">
           <!-- 标签 -->
@@ -44,6 +50,7 @@
 export default {
   data () {
     return {
+      loading: false,
       activeName: 'all', // 当前选中的标签
       list: [], // 接收素材数据
       page: {
@@ -54,6 +61,20 @@ export default {
     }
   },
   methods: {
+    //   上传图片
+    uploadImg (params) {
+      this.loading = true // 先弹个层
+      let data = new FormData()
+      data.append('image', params.file) // 文件加入到参数中
+      this.$axios({
+        method: 'post',
+        url: '/user/images',
+        data
+      }).then(result => {
+        this.loading = false // 关闭弹层
+        this.getMaterial() // 直接调用拉取数据的方法
+      })
+    },
     //   改变页面方法
     changePage (newPage) {
       this.page.currentPage = newPage
@@ -61,8 +82,8 @@ export default {
     },
     //   切换页签的方法
     changeTab () {
-      this.page.currentPage = 1// 重置回第一页
-      this.getMaterial()// 调用获取数据方法
+      this.page.currentPage = 1 // 重置回第一页
+      this.getMaterial() // 调用获取数据方法
     },
     //   获取素材的方法
     getMaterial () {
@@ -74,8 +95,8 @@ export default {
           collect: this.activeName === 'collect'// false是获取所有的数据 true是接收所有的数据
         }
       }).then(result => {
-        this.list = result.data.results// 获取图片数据（可能是全部，也可能是收藏）
-        this.page.total = result.data.total_count// 总条数
+        this.list = result.data.results // 获取图片数据（可能是全部，也可能是收藏）
+        this.page.total = result.data.total_count // 总条数
       })
     }
   },
