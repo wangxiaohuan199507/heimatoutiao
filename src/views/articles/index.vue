@@ -32,14 +32,14 @@
       <el-row class="total" type="flex" align="middle">
         <span>共找到100000条符合条件的内容</span>
       </el-row>
-      <div class="article-item" v-for="item in 100" :key="item">
+      <div class="article-item" v-for="item in list" :key="item.id.toString()">
         <!-- 左侧 -->
         <div class="left">
-          <img src="../../assets/img/anthor.jpg" alt="">
+          <img :src="item.cover.images.length ? item.cover.images[0] : defaultImg" alt="">
           <div class="info">
-            <span>哈哈哈哈哈</span>
-            <el-tag class="tag">标签一</el-tag>
-            <span class="data">2019-12-24 15:07：01</span>
+            <span>{{item.title}}</span>
+            <el-tag :type="item.status | filterType" class="tag">{{item.status | filterStatus}}</el-tag>
+            <span class="data">{{item.pubdate}}</span>
           </div>
         </div>
         <!-- 右侧 -->
@@ -60,7 +60,39 @@ export default {
         channel_id: null, // 默认不选中任何一个分类
         dataRange: [] // 日期范围
       },
-      channels: [] // 接收频道数据
+      channels: [], // 接收频道数据
+      list: [],
+      defaultImg: require('../../assets/img/anthor.jpg') // 默认图片
+    }
+  },
+  filters: {
+    filterStatus (value) {
+      switch (value) {
+        case 0:
+          return '草稿'
+        case 1:
+          return '待审核'
+        case 2:
+          return '已发表'
+        case 3:
+          return '审核失败'
+        default:
+          break
+      }
+    },
+    filterType (value) {
+      switch (value) {
+        case 0:
+          return 'warning'
+        case 1:
+          return 'info'
+        case 2:
+          return ''
+        case 3:
+          return 'danger'
+        default:
+          break
+      }
     }
   },
   methods: {
@@ -71,10 +103,19 @@ export default {
       }).then(result => {
         this.channels = result.data.channels
       })
+    },
+    // 获取文章列表数据
+    getArticles () {
+      this.$axios({
+        url: '/articles'
+      }).then(result => {
+        this.list = result.data.results // 获取文章列表数据
+      })
     }
   },
   created () {
     this.getChannels() // 获取文章数据
+    this.getArticles() // 获取文章列表数据
   }
 }
 </script>
@@ -112,14 +153,14 @@ export default {
             width: 60px;
           }
         }
-        .right {
+      }
+      .right {
           span {
             font-size: 14px;
             margin-right: 8px;
             cursor: pointer;
           }
         }
-      }
     }
   }
-</style>
+  </style>
