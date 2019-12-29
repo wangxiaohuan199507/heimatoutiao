@@ -9,7 +9,7 @@
       <el-form style="padding-left:50px">
         <el-form-item label="文章列表：">
           <!-- 放置一个单选组 文章状态：1-草稿 2-审核通过 3-审核失败 4-已删除-->
-          <el-radio-group v-model="searchForm.status">
+          <el-radio-group v-model="searchForm.status" @change="changeCondition">
             <!-- label -->
             <el-radio :label="5">全部</el-radio>
             <el-radio :label="0">草稿</el-radio>
@@ -19,14 +19,14 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道列表：">
-          <el-select placeholder="请选择频道" v-model="searchForm.channel_id">
+          <el-select @change="changeCondition" placeholder="请选择频道" v-model="searchForm.channel_id">
             <!-- el-option label是显示值 value是存储值 -->
             <el-option v-for="item in channels" :key="item.id" :label="item.name" :value="item.id"></el-option> -->
           </el-select>
         </el-form-item>
         <el-form-item label="时间选择：">
           <!-- 日期选择器 日期范围 -->
-          <el-date-picker v-model="searchForm.dataRange" type="daterange"></el-date-picker>
+          <el-date-picker @change="changeCondition" value-format="yyyy-MM-dd" v-model="searchForm.dataRange" type="daterange"></el-date-picker>
         </el-form-item>
       </el-form>
       <el-row class="total" type="flex" align="middle">
@@ -96,6 +96,16 @@ export default {
     }
   },
   methods: {
+    // 改变条件
+    changeCondition () {
+      let params = {
+        status: this.searchForm.status === 5 ? null : this.searchForm.status, // 因为5是前端定义的一个标识，如果等于5 表示查全部 全部应该什么都不传 直接传null
+        channel_id: this.searchForm.channel_id,
+        begin_pubdate: this.searchForm.dataRange.length ? this.searchForm.dataRange[0] : null, // 开始时间
+        end_pubdate: this.searchForm.dataRange.length > 1 ? this.searchForm.dataRange[1] : null // 截止时间
+      }
+      this.getArticles(params)
+    },
     // 获取所有的频道
     getChannels () {
       this.$axios({
@@ -105,9 +115,10 @@ export default {
       })
     },
     // 获取文章列表数据
-    getArticles () {
+    getArticles (params) {
       this.$axios({
-        url: '/articles'
+        url: '/articles',
+        params
       }).then(result => {
         this.list = result.data.results // 获取文章列表数据
       })
