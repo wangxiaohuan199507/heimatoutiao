@@ -94,11 +94,12 @@ export default {
       this.$refs.publishForm.validate(isOK => {
         if (isOK) {
           // console.log('校验通过')
-          // 调用发布接口
+          // 判断是修改还是发布文章
+          let { articleId } = this.$route.params
           this.$axios({
-            url: '/articles',
-            method: 'post',
-            params: { draft }, // 查询参数
+            url: articleId ? `/articles/${articleId}` : '/articles',
+            method: articleId ? 'put' : 'post',
+            params: { draft },
             data: this.formData // 请求体参数
           }).then(() => {
             this.$message({
@@ -108,6 +109,36 @@ export default {
             // 跳转到文章列表页
             this.$router.push('/home/articles')
           })
+          // if(articleId) {
+          //   // 调用修改文章接口
+          //   this.$axios({
+          //     url: `/articles/${articleId}`,
+          //     params: { draft }, // 查询参数
+          //     data: this.formData // 请求体参数
+          //   }).then(result => {
+          //     this.$message({
+          //     type: 'success',
+          //     message: '保存成功'
+          //   })
+          //   // 跳转到文章列表页
+          //   this.$router.push('/home/articles')
+          //   })
+          // } else {
+          //   // 调用发布接口
+          // this.$axios({
+          //   url: '/articles',
+          //   method: 'post',
+          //   params: { draft }, // 查询参数
+          //   data: this.formData // 请求体参数
+          // }).then(() => {
+          //   this.$message({
+          //     type: 'success',
+          //     message: '保存成功'
+          //   })
+          //   // 跳转到文章列表页
+          //   this.$router.push('/home/articles')
+          // })
+          // }
         }
       })
     },
